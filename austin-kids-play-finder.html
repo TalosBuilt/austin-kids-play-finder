@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Austin Kids Play Finder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300..700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+:root,[data-theme="light"]{
+  --color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;
+  --color-surface-offset:#f0ede8;--color-divider:#dcd9d5;--color-border:#d4d1ca;
+  --color-text:#28251d;--color-text-muted:#7a7974;--color-text-faint:#bab9b4;
+  --color-primary:#01696f;--color-primary-hover:#0c4e54;--color-primary-highlight:#cedcd8;
+  --color-success:#437a22;--color-success-highlight:#d4dfcc;
+  --color-warning:#964219;--color-warning-highlight:#ddcfc6;
+  --color-gold:#b07a00;--color-gold-highlight:#e9e0c6;
+  --color-orange:#da7101;
+  --radius-sm:0.375rem;--radius-md:0.5rem;--radius-lg:0.75rem;--radius-xl:1rem;--radius-full:9999px;
+  --shadow-sm:0 1px 3px oklch(0.2 0.01 80/0.08);--shadow-md:0 4px 16px oklch(0.2 0.01 80/0.10);
+  --shadow-lg:0 12px 32px oklch(0.2 0.01 80/0.14);
+  --font-body:'DM Sans',sans-serif;--font-display:'DM Serif Display',Georgia,serif;
+  --text-xs:clamp(0.75rem,0.7rem + 0.25vw,0.875rem);
+  --text-sm:clamp(0.875rem,0.8rem + 0.35vw,1rem);
+  --text-base:clamp(1rem,0.95rem + 0.25vw,1.125rem);
+  --text-lg:clamp(1.125rem,1rem + 0.75vw,1.5rem);
+  --text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);
+  --transition:180ms cubic-bezier(0.16,1,0.3,1);
+}
+[data-theme="dark"]{
+  --color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;
+  --color-surface-offset:#1d1c1a;--color-divider:#262523;--color-border:#393836;
+  --color-text:#cdccca;--color-text-muted:#797876;--color-text-faint:#5a5957;
+  --color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-highlight:#313b3b;
+  --color-success:#6daa45;--color-success-highlight:#3a4435;
+  --color-warning:#bb653b;--color-warning-highlight:#564942;
+  --color-gold:#e8af34;--color-gold-highlight:#4d4332;
+  --color-orange:#fdab43;
+  --shadow-sm:0 1px 3px oklch(0 0 0/0.25);--shadow-md:0 4px 16px oklch(0 0 0/0.35);
+  --shadow-lg:0 12px 32px oklch(0 0 0/0.45);
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme]){
+  --color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;
+  --color-surface-offset:#1d1c1a;--color-divider:#262523;--color-border:#393836;
+  --color-text:#cdccca;--color-text-muted:#797876;--color-text-faint:#5a5957;
+  --color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-highlight:#313b3b;
+  --color-success:#6daa45;--color-success-highlight:#3a4435;
+  --color-warning:#bb653b;--color-warning-highlight:#564942;
+  --color-gold:#e8af34;--color-gold-highlight:#4d4332;
+  --color-orange:#fdab43;
+}}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth;}
+body{min-height:100dvh;font-family:var(--font-body);font-size:var(--text-base);color:var(--color-text);background:var(--color-bg);line-height:1.6;}
+button{cursor:pointer;background:none;border:none;font:inherit;color:inherit;}
+a,button,[role="button"]{transition:color var(--transition),background var(--transition),border-color var(--transition),box-shadow var(--transition);}
+:focus-visible{outline:2px solid var(--color-primary);outline-offset:3px;border-radius:var(--radius-sm);}
+
+/* HEADER */
+.header{position:sticky;top:0;z-index:100;background:var(--color-bg);border-bottom:1px solid var(--color-border);padding:0.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;}
+.header-logo{display:flex;align-items:center;gap:0.6rem;}
+.logo-icon{width:32px;height:32px;color:var(--color-primary);flex-shrink:0;}
+.header-title{font-family:var(--font-display);font-size:var(--text-lg);color:var(--color-text);line-height:1.1;}
+.header-sub{font-size:var(--text-xs);color:var(--color-text-muted);margin-top:1px;}
+.header-actions{display:flex;align-items:center;gap:0.5rem;}
+.theme-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-full);color:var(--color-text-muted);transition:background var(--transition),color var(--transition);}
+.theme-btn:hover{background:var(--color-surface-offset);color:var(--color-text);}
+
+/* FILTERS BAR */
+.filters-bar{background:var(--color-surface);border-bottom:1px solid var(--color-border);padding:1rem 1.5rem;display:flex;flex-wrap:wrap;gap:0.75rem;align-items:flex-end;}
+.filter-group{display:flex;flex-direction:column;gap:0.3rem;min-width:140px;}
+.filter-label{font-size:var(--text-xs);font-weight:600;color:var(--color-text-muted);text-transform:uppercase;letter-spacing:0.05em;}
+.filter-select{padding:0.4rem 0.7rem;background:var(--color-bg);border:1px solid var(--color-border);border-radius:var(--radius-md);font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text);cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%237a7974' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.5rem center;padding-right:2rem;}
+.filter-select:hover{border-color:var(--color-primary);}
+.filter-select:focus{outline:2px solid var(--color-primary);outline-offset:1px;}
+.filter-actions{display:flex;gap:0.5rem;margin-left:auto;align-self:flex-end;}
+.btn-reset{padding:0.4rem 1rem;border-radius:var(--radius-full);font-size:var(--text-sm);color:var(--color-text-muted);border:1px solid var(--color-border);}
+.btn-reset:hover{background:var(--color-surface-offset);color:var(--color-text);}
+.results-count{font-size:var(--text-xs);color:var(--color-text-muted);padding:0.4rem 0.75rem;background:var(--color-surface-offset);border-radius:var(--radius-full);}
+
+/* MAIN */
+.main{max-width:1400px;margin:0 auto;padding:1.5rem;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr));gap:1rem;}
+
+/* CARD */
+.card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:1.25rem;display:flex;flex-direction:column;gap:0.75rem;box-shadow:var(--shadow-sm);transition:box-shadow var(--transition),transform var(--transition);}
+.card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:0.5rem;}
+.card-name{font-family:var(--font-display);font-size:var(--text-lg);line-height:1.2;color:var(--color-text);}
+.card-link{display:inline-flex;align-items:center;gap:0.25rem;font-size:var(--text-xs);color:var(--color-primary);text-decoration:none;padding:0.25rem 0.5rem;border-radius:var(--radius-sm);border:1px solid var(--color-primary-highlight);flex-shrink:0;}
+.card-link:hover{background:var(--color-primary-highlight);}
+.card-badges{display:flex;flex-wrap:wrap;gap:0.35rem;}
+.badge{display:inline-flex;align-items:center;gap:0.25rem;padding:0.2rem 0.6rem;border-radius:var(--radius-full);font-size:var(--text-xs);font-weight:600;line-height:1.4;}
+.badge-indoor{background:var(--color-primary-highlight);color:var(--color-primary);}
+.badge-outdoor{background:var(--color-success-highlight);color:var(--color-success);}
+.badge-both{background:var(--color-gold-highlight);color:var(--color-gold);}
+.badge-free{background:var(--color-success-highlight);color:var(--color-success);}
+.badge-paid{background:var(--color-surface-offset);color:var(--color-text-muted);}
+.badge-rainy{background:#dbeafe;color:#1e40af;}
+[data-theme="dark"] .badge-rainy{background:#1e3a5f;color:#93c5fd;}
+.badge-type{background:var(--color-surface-offset);color:var(--color-text-muted);}
+.card-meta{display:grid;grid-template-columns:1fr 1fr;gap:0.4rem 0.75rem;}
+.meta-item{display:flex;align-items:center;gap:0.35rem;font-size:var(--text-xs);color:var(--color-text-muted);}
+.meta-item svg{flex-shrink:0;color:var(--color-text-faint);}
+.meta-value{color:var(--color-text);font-weight:500;}
+.card-chill{display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.75rem;background:var(--color-surface-offset);border-radius:var(--radius-md);}
+.chill-label{font-size:var(--text-xs);font-weight:600;color:var(--color-text-muted);white-space:nowrap;}
+.chill-bar{flex:1;height:6px;background:var(--color-divider);border-radius:var(--radius-full);overflow:hidden;}
+.chill-fill{height:100%;border-radius:var(--radius-full);transition:width 0.4s ease;}
+.chill-low .chill-fill{width:33%;background:var(--color-warning);}
+.chill-medium .chill-fill{width:66%;background:var(--color-gold);}
+.chill-high .chill-fill{width:100%;background:var(--color-success);}
+.chill-text{font-size:var(--text-xs);font-weight:700;white-space:nowrap;}
+.chill-low .chill-text{color:var(--color-warning);}
+.chill-medium .chill-text{color:var(--color-gold);}
+.chill-high .chill-text{color:var(--color-success);}
+.card-notes{font-size:var(--text-xs);color:var(--color-text-muted);line-height:1.5;border-top:1px solid var(--color-divider);padding-top:0.6rem;}
+.card-footer{display:flex;gap:0.5rem;flex-wrap:wrap;align-items:center;border-top:1px solid var(--color-divider);padding-top:0.6rem;}
+.footer-tag{font-size:var(--text-xs);color:var(--color-text-muted);background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-sm);padding:0.15rem 0.5rem;}
+.signup-note{font-size:var(--text-xs);color:var(--color-warning);display:flex;align-items:center;gap:0.25rem;margin-left:auto;}
+
+/* PRICE CHIP */
+.price-chip{display:inline-flex;align-items:baseline;gap:0.2rem;font-size:var(--text-xs);font-weight:700;color:var(--color-text);}
+.price-sub{font-weight:400;color:var(--color-text-muted);}
+
+/* EMPTY */
+.empty-state{display:flex;flex-direction:column;align-items:center;text-align:center;padding:4rem 2rem;color:var(--color-text-muted);gap:1rem;}
+.empty-state h3{font-size:var(--text-lg);color:var(--color-text);}
+
+/* TOOLTIP */
+.tooltip-wrap{position:relative;display:inline-flex;}
+.tooltip-wrap:hover .tooltip,.tooltip-wrap:focus-within .tooltip{opacity:1;pointer-events:auto;}
+.tooltip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:var(--color-text);color:var(--color-bg);font-size:11px;white-space:nowrap;padding:0.25rem 0.5rem;border-radius:var(--radius-sm);pointer-events:none;opacity:0;transition:opacity 0.15s;z-index:200;}
+
+@media(max-width:640px){
+  .filters-bar{gap:0.5rem;}
+  .filter-group{min-width:calc(50% - 0.25rem);}
+  .filter-actions{width:100%;justify-content:space-between;}
+  .header-title{font-size:1.1rem;}
+  .header-sub{display:none;}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-logo">
+    <svg class="logo-icon" viewBox="0 0 32 32" fill="none" aria-label="Austin Kids Play Finder">
+      <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M10 20 C10 15 14 12 16 12 C18 12 22 15 22 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="16" cy="10" r="2.5" fill="currentColor"/>
+      <path d="M8 22 h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M13 22 v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M19 22 v2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="header-title">Austin Kids Play Finder</div>
+      <div class="header-sub">Balcones Woods &amp; Lakeline area · ages 2–10</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <span class="results-count" id="results-count">— spots</span>
+    <button class="theme-btn" data-theme-toggle aria-label="Toggle dark mode">
+      <i data-lucide="moon" width="18" height="18"></i>
+    </button>
+  </div>
+</header>
+
+<div class="filters-bar">
+  <div class="filter-group">
+    <span class="filter-label">Indoor / Outdoor</span>
+    <select class="filter-select" id="f-indoor">
+      <option value="">All</option>
+      <option value="Indoor">Indoor only</option>
+      <option value="Mostly Indoor">Mostly Indoor</option>
+      <option value="Indoor+Outdoor">Indoor + Outdoor</option>
+      <option value="Outdoor">Outdoor only</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Cost</span>
+    <select class="filter-select" id="f-cost">
+      <option value="">All</option>
+      <option value="free">Free only</option>
+      <option value="paid">Paid only</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Parent Chill</span>
+    <select class="filter-select" id="f-chill">
+      <option value="">All levels</option>
+      <option value="High">High – sit &amp; relax</option>
+      <option value="Medium">Medium – supervise</option>
+      <option value="Low">Low – stay close</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Rainy Day Pick</span>
+    <select class="filter-select" id="f-rainy">
+      <option value="">Any</option>
+      <option value="Y">Rainy day only</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Food Options</span>
+    <select class="filter-select" id="f-food">
+      <option value="">Any</option>
+      <option value="On-site food">On-site food</option>
+      <option value="Food in same center">Food in same center</option>
+      <option value="Bring packed lunch">Pack your own</option>
+    </select>
+  </div>
+  <div class="filter-group">
+    <span class="filter-label">Drive time</span>
+    <select class="filter-select" id="f-drive">
+      <option value="">Any</option>
+      <option value="10">≤ 10 min</option>
+      <option value="15">≤ 15 min</option>
+      <option value="20">≤ 20 min</option>
+    </select>
+  </div>
+  <div class="filter-actions">
+    <button class="btn-reset" id="btn-reset">Reset filters</button>
+  </div>
+</div>
+
+<main class="main">
+  <div class="cards-grid" id="cards-grid"></div>
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <i data-lucide="search-x" width="48" height="48" style="color:var(--color-text-faint)"></i>
+    <h3>No spots match these filters</h3>
+    <p>Try loosening a filter — e.g. allow paid spots or increase the drive time.</p>
+    <button class="btn-reset" id="btn-reset-2" style="margin-top:0.5rem;">Reset all filters</button>
+  </div>
+</main>
+
+<script>
+const PLACES = [
+  {
+    name:"Lakeline Mall – Play by Simon",
+    area:"At Lakeline Mall",
+    drive:5,
+    indoor:"Indoor",
+    type:"Mall playscape",
+    ageLow:0,ageHigh:6,
+    contained:"Fully contained",
+    chillRating:"High",
+    rainy:"Y",
+    freeEntry:"Y",
+    pricingModel:"Free",
+    approxPrice:"Free",
+    foodOption:"Food in same center",
+    packedOK:"N",
+    signup:"N",
+    signupNote:"",
+    mapLink:"https://maps.google.com/?q=Lakeline+Mall+Austin+TX",
+    notes:"Soft padded climbers and slides for 0–6 only. Gated low-wall perimeter with benches all around — the gold standard for 'sit and watch' free play.",
+    tags:["0–6 only","Soft play","Gated","Benches"]
+  },
+  {
+    name:"Bricks & Minifigs – North Austin",
+    area:"183 / Anderson Mill",
+    drive:10,
+    indoor:"Indoor",
+    type:"LEGO store free play",
+    ageLow:3,ageHigh:10,
+    contained:"Fully contained",
+    chillRating:"High",
+    rainy:"Y",
+    freeEntry:"Y",
+    pricingModel:"Free (purchase expected)",
+    approxPrice:"Free to play",
+    foodOption:"Food in same center",
+    packedOK:"N",
+    signup:"N",
+    signupNote:"",
+    mapLink:"https://maps.google.com/?q=Bricks+and+Minifigs+Austin+TX",
+    notes:"Big tubs of loose LEGO bricks and minifigs at build tables. Kids stay at tables in a defined section while you stand or sit nearby. May buy a minifig but no fee required.",
+    tags:["Build tables","Defined zone","Great for 4–8"]
+  },
+  {
+    name:"Cedar Park Public Library – Children's Area",
+    area:"Cedar Park",
+    drive:18,
+    indoor:"Indoor",
+    type:"Library kids' playscape",
+    ageLow:0,ageHigh:6,
+    contained:"Fully contained",
+    chillRating:"High",
+    rainy:"Y",
+    freeEntry:"Y",
+    pricingModel:"Free",
+    approxPrice:"Free",
+    foodOption:"Bring packed lunch",
+    packedOK:"Y",
+    signup:"N",
+    signupNote:"",
+    mapLink:"https://maps.google.com/?q=Cedar+Park+Public+Library+TX",
+    notes:"Described as 'like a mini museum'. Has an indoor playscape with slide, kitchen/pretend-play corner, and baby play space — all inside the contained children's section.",
+    tags:["Indoor slide","Pretend play","0–6 zone","AC"]
+  },
+  {
+    name:"Barton Creek Square – Disney Jr. / Care Bears Zone",
+    area:"South MoPac",
+    drive:22,
+    indoor:"Indoor",
+    type:"Mall playscape",
+    ageLow:2,ageHigh:7,
+    contained:"Partially contained",
+    chillRating:"Medium",
+    rainy:"Y",
+    freeEntry:"Y",
+    pricingModel:"Free",
+    approxPrice:"Free",
+    foodOption:"Food in same center",
+    packedOK:"N",
+    signup:"N",
+    signupNote:"",
+    mapLink:"https://maps.google.com/?q=Barton+Creek+Square+Mall+Austin+TX",
+    notes:"Disney Junior / Care Bears themed soft play zone on the lower level near JCPenney. Defined carpet area with seating on the perimeter — same vibe as Lakeline but a change of scene.",
+    tags:["Disney themed","Lower level","Change of scene"]
+  },
+  {
+    name:"Living Spaces – Kids Play Zone",
+    area:"Pflugerville (via 130)",
+    drive:22,
+    indoor:"Indoor",
+    type:"In-store play area",
+    ageLow:2,ageHigh:8,
+    contained:"Fully contained",
+    chillRating:"High",
+    rainy:"Y",
+    freeEntry:"Y",
+    pricingModel:"Free",
+    approxPrice:"Free",
+    foodOption:"Bring packed lunch",
+    packedOK:"N",
+    signup:"N",
+    signupNote:"Socks required for kids",
+    mapLink:"https://maps.google.com/?q=Living+Spaces+Pflugerville+TX",
+    notes:"Enclosed in-store play area — kids run inside a contained structure while you browse furniture outside. Socks required. No time limit enforced; stay as long as store is open and kids are happy.",
+    tags:["Enclosed zone","Socks needed","Adults sit outside","No time limit"]
+  },
+  {
+    name:"Austin Public Library branches (Spicewood Springs / Milwood)",
+    area:"North Austin",
+    drive:12,
+    indoor:"Indoor",
+    type:"Library kids' area",
+    ageLow:0,ageHigh:6,
+    contained:"Partially contained",
+    chillRating:"Medium",
+    rainy:"Y",
+    freeEntry:"Y",
+    pricingModel:"Free",
+    approxPrice:"Free",
+    foodOption:"Bring packed lunch",
+    packedOK:"Y",
+    signup:"N",
+    signupNote:"",
+    mapLink:"https://maps.google.com/?q=Spicewood+Springs+Library+Austin+TX",
+    notes:"Designated kids' section with toys, manipulatives, and some soft play elements. Less playscape-ish than Cedar Park Library but very close. Good AC, defined zone, you can sit inside.",
+    tags:["Closest library","Toys + blocks","AC","Defined kids zone"]
+  },
+  {
+    name:"H-Mart Lakeline – Store wander",
+    area:"At Lakeline (183/620)",
+    drive:8,
+    indoor:"Indoor",
+    type:"Grocery store wander",
+    ageLow:2,ageHigh:8,
+    contained:"Partially contained",
+    chillRating:"Medium",
+    rainy:"Y",
+    freeEntry:"Y",
+    pricingModel:"Free",
+    approxPrice:"Free",
+    foodOption:"On-site food",
+    packedOK:"N",
+    signup:"N",
+    signupNote:"",
+    mapLink:"https://maps.google.com/?q=H-Mart+Austin+TX+Lakeline",
+    notes:"Asian grocery with kid-friendly mini carts, loads of visual stimulation, a food court, and a bakery. Great paired with Lakeline mall play. Not a playscape — more of a sensory 'wander and snack' outing.",
+    tags:["Kid carts","Food court","Combine with Lakeline","Sensory wander"]
+  },
+  {
+    name:"Inflatable Wonderland – Lakeline Mall",
+    area:"Inside Lakeline Mall",
+    drive:5,
+    indoor:"Indoor",
+    type:"Bounce house / inflatables",
+    ageLow:2,ageHigh:10,
+    contained:"Fully contained",
+    chillRating:"High",
+    rainy:"Y",
+    freeEntry:"N",
+    pricingModel:"Per visit",
+    approxPrice:"~$15–18/kid",
+    foodOption:"Food in same center",
+    packedOK:"N",
+    signup:"N",
+    signupNote:"Book online for discounts",
+    mapLink:"https://maps.google.com/?q=Inflatable+Wonderland+Lakeline+Mall+Austin",
+    notes:"Bounce houses and slides inside Lakeline Mall. Pairs perfectly with the free Play by Simon area next door. Adults wait outside the inflatables — very chill supervision. Socks required.",
+    tags:["Bounce houses","Pair with free play","Socks needed","Adults outside zone"]
+  },
+  {
+    name:"Catch Air",
+    area:"183 / Anderson Mill",
+    drive:12,
+    indoor:"Indoor",
+    type:"Indoor play gym",
+    ageLow:1,ageHigh:10,
+    contained:"Fully contained",
+    chillRating:"High",
+    rainy:"Y",
+    freeEntry:"N",
+    pricingModel:"Per visit",
+    approxPrice:"~$12–16/kid",
+    foodOption:"Food in same center",
+    packedOK:"N",
+    signup:"N",
+    signupNote:"",
+    mapLink:"https://maps.google.com/?q=Catch+Air+Austin+TX",
+    notes:"Huge multi-level soft playscape with slides plus a fully fenced enclosed toddler zone for under 4. Benches and booths throughout so adults can sit with full line of sight.",
+    tags:["Fenced toddler zone","Multi-level","Benches throughout","Big slides"]
+  },
+  {
+    name:"Indigo Play",
+    area:"183 / Research Blvd area",
+    drive:10,
+    indoor:"Indoor",
+    type:"Indoor play gym",
+    ageLow:1,ageHigh:10,
+    contained:"Fully contained",
+    chillRating:"High",
+    rainy:"Y",
+    freeEntry:"N",
+    pricingModel:"Per visit",
+    approxPrice:"~$14–18/kid",
+    foodOption:"On-site food",
+    packedOK:"N",
+    signup:"N",
+    signupNote:"",
+    mapLink:"https://maps.google.com/?q=Indigo+Play+Austin+TX",
+    notes:"World-themed giant playscape, toddler area, sensory room, and imagination/pretend zones. On-site café with seating that looks over the whole space — built for parents to sit with coffee.",
+    tags:["Café on-site","Toddler area","Sensory room","Parents can sit with coffee"]
+  },
+  {
+    name:"Cheeky Monkeys – Cedar Park",
+    area:"Cedar Park (Whitestone Blvd)",
+    drive:18,
+    indoor:"Indoor",
+    type:"Indoor play gym",
+    ageLow:1,ageHigh:8,
+    contained:"Fully contained",
+    chillRating:"High",
+    rainy:"Y",
+    freeEntry:"N",
+    pricingModel:"Per visit",
+    approxPrice:"~$10–14/kid",
+    foodOption:"Food in same center",
+    packedOK:"N",
+    signup:"N",
+    signupNote:"",
+    mapLink:"https://maps.google.com/?q=Cheeky+Monkeys+Cedar+Park+TX",
+    notes:"Multi-story indoor playscape with a separate fenced toddler section for 4-and-under. Adults sit at tables with a view of most of the space. Very popular with Cedar Park families.",
+    tags:["Toddler section","Fenced 4-under area","Multi-story","Cedar Park"]
+  },
+  {
+    name:"Little Land – Cedar Park",
+    area:"Cedar Park",
+    drive:20,
+    indoor:"Indoor",
+    type:"Sensory / play gym",
+    ageLow:1,ageHigh:6,
+    contained:"Fully contained",
+    chillRating:"Medium",
+    rainy:"Y",
+    freeEntry:"N",
+    pricingModel:"Per visit",
+    approxPrice:"~$12–15/kid",
+    foodOption:"Bring packed lunch",
+    packedOK:"Y",
+    signup:"N",
+    signupNote:"",
+    mapLink:"https://maps.google.com/?q=Little+Land+Cedar+Park+TX",
+    notes:"Therapy-inspired indoor gym with climbing structures, balance equipment, and sensory elements designed specifically for little kids. Calmer than bounce gyms. You're in the room but can mostly sit.",
+    tags:["Sensory-friendly","Calmer vibe","Climbing + balance","Built for little kids"]
+  },
+  {
+    name:"Austin Nature & Science Center – Indoor Exhibits",
+    area:"Zilker / West Austin",
+    drive:22,
+    indoor:"Indoor+Outdoor",
+    type:"Museum / nature center",
+    ageLow:2,ageHigh:8,
+    contained:"Partially contained",
+    chillRating:"Low",
+    rainy:"N",
+    freeEntry:"Y",
+    pricingModel:"Free",
+    approxPrice:"Free (parking may cost)",
+    foodOption:"Bring packed lunch",
+    packedOK:"Y",
+    signup:"N",
+    signupNote:"Parking lot fills quickly on weekends",
+    mapLink:"https://maps.google.com/?q=Austin+Nature+Science+Center+TX",
+    notes:"Indoor hands-on science exhibits plus outdoor nature trails and animal exhibits. Kids push buttons, open drawers, touch things. More 'slow wander' than sit-and-watch — you trail them room to room.",
+    tags:["Hands-on exhibits","Indoor + outdoor","Field trip vibe","Free entry"]
+  },
+  {
+    name:"Lakeshore Learning – Arboretum area",
+    area:"183 / Arboretum (very close)",
+    drive:8,
+    indoor:"Indoor",
+    type:"Store + free craft events",
+    ageLow:2,ageHigh:8,
+    contained:"Partially contained",
+    chillRating:"Medium",
+    rainy:"Y",
+    freeEntry:"Y",
+    pricingModel:"Event-based (free)",
+    approxPrice:"Free events",
+    foodOption:"Food in same center",
+    packedOK:"N",
+    signup:"Y",
+    signupNote:"Check store calendar; some events require RSVP",
+    mapLink:"https://maps.google.com/?q=Lakeshore+Learning+Austin+TX",
+    notes:"Educational toy store with free Saturday craft events for kids. During events, kids do structured crafts at tables while you sit nearby. Great when paired with a lunch at the Arboretum.",
+    tags:["Free Sat crafts","Event-based","Near Arboretum","Check calendar"]
+  },
+  {
+    name:"Home Depot Kids Workshop",
+    area:"Multiple locations (183/360)",
+    drive:10,
+    indoor:"Indoor",
+    type:"Free DIY workshop",
+    ageLow:3,ageHigh:10,
+    contained:"Partially contained",
+    chillRating:"Low",
+    rainy:"Y",
+    freeEntry:"Y",
+    pricingModel:"Event-based (free)",
+    approxPrice:"Free",
+    foodOption:"Bring packed lunch",
+    packedOK:"N",
+    signup:"Y",
+    signupNote:"Register on HomeDepot.com — fills up fast, monthly events",
+    mapLink:"https://www.homedepot.com/workshops",
+    notes:"Monthly free DIY wood building workshop for kids 5–12. Kids hammer, paint, and build a wood kit. You assist at the table — not contained but very structured. Great for older kids in the range.",
+    tags:["Monthly event","Wood building","Pre-register needed","Ages 5–12 ideal"]
+  },
+  {
+    name:"Bricks & Minifigs – South Austin",
+    area:"South Austin (Brodie / Sunset Valley)",
+    drive:30,
+    indoor:"Indoor",
+    type:"LEGO store free play",
+    ageLow:3,ageHigh:12,
+    contained:"Fully contained",
+    chillRating:"High",
+    rainy:"Y",
+    freeEntry:"Y",
+    pricingModel:"Free (purchase expected)",
+    approxPrice:"Free to play",
+    foodOption:"Food in same center",
+    packedOK:"N",
+    signup:"N",
+    signupNote:"",
+    mapLink:"https://maps.google.com/?q=Bricks+and+Minifigs+South+Austin+TX",
+    notes:"Same concept as the North location — loose bricks and minifigs at build tables. Worth the drive if you want a change of scene or to combine with South Austin errands.",
+    tags:["Build tables","South location","Change of scene","Occasional events"]
+  },
+];
+
+function chillClass(c){return c==="High"?"chill-high":c==="Medium"?"chill-medium":"chill-low";}
+function chillLabel(c){return c==="High"?"High – sit back":c==="Medium"?"Medium – nearby":"Low – stay close";}
+
+function indoorBadge(v){
+  if(v==="Indoor") return `<span class="badge badge-indoor">🏠 Indoor</span>`;
+  if(v==="Mostly Indoor") return `<span class="badge badge-indoor">🏠 Mostly Indoor</span>`;
+  if(v==="Indoor+Outdoor") return `<span class="badge badge-both">🌤 Indoor + Outdoor</span>`;
+  return `<span class="badge badge-outdoor">🌿 Outdoor</span>`;
+}
+
+function renderCard(p){
+  const signupBadge = p.signup==="Y"
+    ? `<span class="signup-note"><i data-lucide="alert-circle" width="12" height="12"></i> Sign-up needed: ${p.signupNote}</span>` : "";
+  const rainyBadge = p.rainy==="Y" ? `<span class="badge badge-rainy">🌧 Rainy day pick</span>` : "";
+  const freeBadge = p.freeEntry==="Y"
+    ? `<span class="badge badge-free">✓ Free entry</span>`
+    : `<span class="badge badge-paid">$ Paid</span>`;
+  const tagsHtml = p.tags.map(t=>`<span class="footer-tag">${t}</span>`).join("");
+  const packedNote = p.packedOK==="Y"
+    ? `<span class="footer-tag" style="color:var(--color-success);">🎒 Packed lunch OK</span>` : "";
+
+  return `<div class="card"
+    data-indoor="${p.indoor}"
+    data-free="${p.freeEntry}"
+    data-chill="${p.chillRating}"
+    data-rainy="${p.rainy}"
+    data-food="${p.foodOption}"
+    data-drive="${p.drive}">
+    <div class="card-top">
+      <div class="card-name">${p.name}</div>
+      <a class="card-link" href="${p.mapLink}" target="_blank" rel="noopener noreferrer">
+        <i data-lucide="map-pin" width="12" height="12"></i> Map
+      </a>
+    </div>
+    <div class="card-badges">
+      ${indoorBadge(p.indoor)}
+      ${freeBadge}
+      ${rainyBadge}
+      <span class="badge badge-type">${p.type}</span>
+    </div>
+    <div class="card-meta">
+      <div class="meta-item"><i data-lucide="clock" width="13" height="13"></i>&nbsp;<span>~${p.drive} min from BW</span></div>
+      <div class="meta-item"><i data-lucide="users" width="13" height="13"></i>&nbsp;<span>Ages <span class="meta-value">${p.ageLow}–${p.ageHigh}</span></span></div>
+      <div class="meta-item"><i data-lucide="shield-check" width="13" height="13"></i>&nbsp;<span class="meta-value">${p.contained}</span></div>
+      <div class="meta-item"><i data-lucide="utensils" width="13" height="13"></i>&nbsp;<span>${p.foodOption}</span></div>
+      <div class="meta-item" style="grid-column:1/-1;"><i data-lucide="tag" width="13" height="13"></i>&nbsp;
+        <span class="price-chip">${p.approxPrice} <span class="price-sub">(${p.pricingModel})</span></span>
+      </div>
+    </div>
+    <div class="card-chill ${chillClass(p.chillRating)}">
+      <span class="chill-label">Parent chill</span>
+      <div class="chill-bar"><div class="chill-fill"></div></div>
+      <span class="chill-text">${chillLabel(p.chillRating)}</span>
+    </div>
+    <div class="card-notes">${p.notes}</div>
+    <div class="card-footer">${tagsHtml}${packedNote}${signupBadge}</div>
+  </div>`;
+}
+
+function applyFilters(){
+  const indoor = document.getElementById("f-indoor").value;
+  const cost = document.getElementById("f-cost").value;
+  const chill = document.getElementById("f-chill").value;
+  const rainy = document.getElementById("f-rainy").value;
+  const food = document.getElementById("f-food").value;
+  const drive = document.getElementById("f-drive").value;
+
+  const grid = document.getElementById("cards-grid");
+  const empty = document.getElementById("empty-state");
+  let count = 0;
+
+  const filtered = PLACES.filter(p => {
+    if(indoor && p.indoor !== indoor) return false;
+    if(cost === "free" && p.freeEntry !== "Y") return false;
+    if(cost === "paid" && p.freeEntry !== "N") return false;
+    if(chill && p.chillRating !== chill) return false;
+    if(rainy === "Y" && p.rainy !== "Y") return false;
+    if(food && p.foodOption !== food) return false;
+    if(drive && p.drive > parseInt(drive)) return false;
+    return true;
+  });
+
+  grid.innerHTML = filtered.map(renderCard).join("");
+  count = filtered.length;
+  document.getElementById("results-count").textContent = count + " spot" + (count !== 1 ? "s" : "");
+  empty.style.display = count === 0 ? "flex" : "none";
+  grid.style.display = count === 0 ? "none" : "grid";
+  lucide.createIcons();
+}
+
+document.querySelectorAll(".filter-select").forEach(s => s.addEventListener("change", applyFilters));
+document.getElementById("btn-reset").addEventListener("click", () => {
+  document.querySelectorAll(".filter-select").forEach(s => s.value = "");
+  applyFilters();
+});
+document.getElementById("btn-reset-2").addEventListener("click", () => {
+  document.querySelectorAll(".filter-select").forEach(s => s.value = "");
+  applyFilters();
+});
+
+// Dark mode toggle
+(function(){
+  const t=document.querySelector("[data-theme-toggle]");
+  const r=document.documentElement;
+  let d=matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light";
+  r.setAttribute("data-theme",d);
+  const sunSvg='<i data-lucide="sun" width="18" height="18"></i>';
+  const moonSvg='<i data-lucide="moon" width="18" height="18"></i>';
+  t.innerHTML = d==="dark" ? sunSvg : moonSvg;
+  t.addEventListener("click",()=>{
+    d=d==="dark"?"light":"dark";
+    r.setAttribute("data-theme",d);
+    t.innerHTML = d==="dark" ? sunSvg : moonSvg;
+    lucide.createIcons();
+  });
+})();
+
+applyFilters();
+</script>
+</body>
+</html>
